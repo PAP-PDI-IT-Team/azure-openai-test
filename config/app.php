@@ -123,4 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'azure_key' => env('APP_AZURE_KEY', 'file'),
+    'azure_resource' => env('APP_AZURE_RESOURCE', 'file'),
+    'azure_deployment_id' => env('APP_AZURE_DEPLOYMENT_ID', 'file'),
+    'azure_ai_version' => env('APP_AZURE_AI_VERSION', 'file'),
 ];
