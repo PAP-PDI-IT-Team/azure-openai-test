@@ -10,4 +10,5 @@ Route::get('/user', function (Request $request) {
 
 Route::controller(AiController::class)->group(function() {
     Route::post('/chat', 'chat');
+    Route::post('/thread', 'thread');
 });
