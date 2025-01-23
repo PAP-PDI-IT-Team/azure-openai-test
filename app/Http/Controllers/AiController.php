@@ -59,23 +59,25 @@ class AiController extends Controller
 
         // $baseUri = "https://{$resource}.openai.azure.com/openai/deployments/{$deployment_id}/chat/completions?api-version={$ai_version}";
         $baseUri = "https://{$resource}.openai.azure.com/openai/deployments/{$deployment_id}";
-        
-        $client = OpenAI::factory()
+        try {
+            $client = OpenAI::factory()
             ->withBaseUri($baseUri)
             ->withHttpHeader('api-key', $key)
             ->withQueryParam('api-version', $ai_version)
             ->make();
             // ->withApiKey($key)
             
-        
-        $result = $client->chat()->create([
-            'messages' => [
-                ['role' => 'user', 'content' => 'Hi.'],
-            ],
-        ]);
+            $result = $client->chat()->create([
+                'messages' => [
+                    ['role' => 'user', 'content' => 'Hi.'],
+                ],
+            ]); 
+            logger($result['choices'][0]['message']['content']);
+            return response()->json(['message' => $result['choices'][0]['message']['content']]);
+        } catch(\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
         // logger($baseUri);
-        logger($result['choices'][0]['message']['content']);
-        return response()->json(['message' => $result['choices'][0]['message']['content']]);
 
         
         // $client = OpenAI::factory()
