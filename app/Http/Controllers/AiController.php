@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use OpenAI\OpenAI;
+use OpenAI;
 use OpenAI\Transporters\GuzzleTransporter;  
 use GuzzleHttp\Client as GuzzleClient;  
 
@@ -57,13 +57,25 @@ class AiController extends Controller
         $assistantId = 'asst_Y2wli5vbneJrdbYT8XKYKLxH';
         $prompt = $request->post('prompt');
 
-        $client = OpenAI::factory()
-            ->withApiKey($key)
-            ->withBaseUri("https://{$resource}.openai.azure.com/")
-            ->withHttpHeader('api-key', $key)
-            ->make();
+        // $baseUri = "https://{$resource}.openai.azure.com/openai/deployments/{$deployment_id}/chat/completions?api-version={$ai_version}";
+        $baseUri = "https://{$resource}.openai.azure.com/openai/deployments/{$deployment_id}";
         
-            logger($client);
+        $client = OpenAI::factory()
+            ->withBaseUri($baseUri)
+            ->withHttpHeader('api-key', $key)
+            ->withQueryParam('api-version', $ai_version)
+            ->make();
+            // ->withApiKey($key)
+            
+        
+        $result = $client->chat()->create([
+            'messages' => [
+                ['role' => 'user', 'content' => 'Hi.'],
+            ],
+        ]);
+        // logger($baseUri);
+        logger($result['choices'][0]['message']['content']);
+        return response()->json(['message' => $result['choices'][0]['message']['content']]);
 
         
         // $client = OpenAI::factory()
