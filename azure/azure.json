@@ -1,0 +1,69 @@
+{
+  "name": "azure",
+  "version": "1",
+  "items": [
+    {
+      "type": "http",
+      "name": "chat",
+      "seq": 2,
+      "request": {
+        "url": "http://127.0.0.1:8000/api/chat",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"prompt\": \"Explain the DISC Personalities\"\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "thread",
+      "seq": 3,
+      "request": {
+        "url": "http://127.0.0.1:8000/api/thread",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"prompt\": \"Hi\"\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    }
+  ],
+  "environments": [
+    {
+      "variables": [],
+      "name": "Test"
+    }
+  ],
+  "brunoConfig": {
+    "version": "1",
+    "name": "azure",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}
