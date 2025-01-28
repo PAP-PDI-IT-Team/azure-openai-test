@@ -12,6 +12,13 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class AiController extends Controller
 {
+    /**
+     * 
+     * This endpoint is currently in maintenance.
+     * 
+     * 
+     */
+
     public function chat(Request $request){
         $key = config('app.azure_key');
         $resource = config('app.azure_resource');
