@@ -5,10 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use OpenAI;
-// use OpenAI\Laravel\Facades\OpenAI;
-use OpenAI\Transporters\GuzzleTransporter;  
-use GuzzleHttp\Client as GuzzleClient;  
-
 
 class AiController extends Controller
 {
@@ -141,6 +137,111 @@ class AiController extends Controller
             ->json();
         
         return $messages;
+    }
+
+    public function streamThread(Request $request){
+        $key = config('app.azure_key');
+        $resource = config('app.azure_resource');
+        $deployment_id = config('app.azure_deployment_id');
+        $ai_version = config('app.azure_ai_version');
+
+        // $assistantId = $request->post('assistant_id');
+        $assistantId = 'asst_xVM002Vbb72Rb32i5LDc8fgc';
+        $prompt = $request->post('prompt');
+
+        $baseUri = "https://azure-test-ai-rigel.openai.azure.com/";
+        logger($baseUri);
+        try {
+            $response = Http::withHeaders([
+                'api-key' => $key, 'Content-Type' => 'application/json', ])->post("https://$resource.openai.azure.com/openai/threads/runs?api-version=2024-05-01-preview", [
+                    "thread" => [
+                        "messages" => [
+                          ["role" => "user", "content" => $prompt]
+                        ],
+                    ],
+                    'assistant_id' => $assistantId,
+                    'stream' => true
+                    
+                ]); 
+        
+            $body = $response->getBody();
+            $buffer = '';
+            $finalResponse = '';
+        
+            while (!$body->eof()) {
+                $buffer .= $body->read(1024);
+                
+                while (($pos = strpos($buffer, "\n\n")) !== false) {
+                    $event = substr($buffer, 0, $pos);
+                    $buffer = substr($buffer, $pos + 2);
+        
+                    if (preg_match('/data: (\{.*\})/', $event, $matches)) {
+                        $data = json_decode($matches[1], true);
+                        
+                        if (isset($data['delta']['content'][0]['text']['value'])) {
+                            $chunk = $data['delta']['content'][0]['text']['value'];
+                            $finalResponse .= $chunk;
+                            
+                            logger('Stream chunk:', ['content' => $chunk]);
+                            
+                            echo $chunk;
+                            ob_flush();
+                            flush();
+                        }
+                    }
+                }
+            }
+        
+        } catch(\Exception $error) {
+            logger($error);
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
+
+    }
+
+    public function streamChat(Request $request){
+        $key = config('app.azure_key');
+        $resource = config('app.azure_resource');
+        $deployment_id = config('app.azure_deployment_id');
+        $ai_version = config('app.azure_ai_version');
+
+        $prompt = $request->post('prompt');
+
+        $baseUri = "https://{$resource}.openai.azure.com/openai/deployments/{$deployment_id}";
+        try {
+            $client = OpenAI::factory()
+            ->withBaseUri($baseUri)
+            ->withHttpHeader('api-key', $key)
+            ->withQueryParam('api-version', $ai_version)
+            ->make();
+            // ->withApiKey($key)
+            
+            $result = $client->chat()->createStreamed([
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'stream' => true
+            ]);
+            
+            $fullResponse = ''; 
+            foreach ($result as $chunk) {
+
+                $content = $chunk['choices'][0]['delta']['content'] ?? '';
+                
+                if (!empty($content)) {
+                    $fullResponse .= $content;
+                    
+                    logger('Stream chunk received:', ['content' => $content]);
+
+                    echo $content;
+                    ob_flush();
+                    flush();
+                }
+            }
+            
+        } catch(\Exception $error) {
+            return response()->json(['error' => $error->getMessage()], 500);
+        }
     }
    
 }
