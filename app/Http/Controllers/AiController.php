@@ -191,6 +191,7 @@ class AiController extends Controller
                     }
                 }
             }
+            return response()->json(['message' => $finalResponse]);
         
         } catch(\Exception $error) {
             logger($error);
@@ -223,13 +224,13 @@ class AiController extends Controller
                 'stream' => true
             ]);
             
-            $fullResponse = ''; 
+            $finalResponse = ''; 
             foreach ($result as $chunk) {
 
                 $content = $chunk['choices'][0]['delta']['content'] ?? '';
                 
                 if (!empty($content)) {
-                    $fullResponse .= $content;
+                    $finalResponse .= $content;
                     
                     logger('Stream chunk received:', ['content' => $content]);
 
@@ -238,6 +239,8 @@ class AiController extends Controller
                     flush();
                 }
             }
+
+            return response()->json(['message' => $finalResponse]);
             
         } catch(\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);
