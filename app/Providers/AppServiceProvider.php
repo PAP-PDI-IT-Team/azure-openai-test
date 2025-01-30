@@ -24,8 +24,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         
-        // Gate::define('viewApiDocs', function (User $user) {
-        //     return true;
-        // });
+        Gate::define('viewApiDocs', function (User $user) {
+            return true;
+        });
     }
 }
