@@ -191,7 +191,7 @@ class AiController extends Controller
                     }
                 }
             }
-            return response()->json(['message' => $finalResponse]);
+            return response()->make('');
         
         } catch(\Exception $error) {
             logger($error);
@@ -240,11 +240,12 @@ class AiController extends Controller
                 }
             }
 
-            return response()->json(['message' => $finalResponse]);
+            return response()->make('');
             
         } catch(\Exception $error) {
             return response()->json(['error' => $error->getMessage()], 500);
         }
     }
+
    
 }
