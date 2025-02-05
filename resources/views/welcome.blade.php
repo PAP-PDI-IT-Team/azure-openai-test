@@ -23,6 +23,7 @@
         <div style="display: flex; justify-content: center; align-items:center; gap: 15px; height: 250px;">
             <img src="{{asset('joel.jpg')}}" alt="Joel/Caloy" style="max-height: 50%;">
             <img src="{{asset('fil.png')}}" alt="sleep dev and chix dev" style="max-height: 50%;">
+            <img src="{{asset('marvin.png')}}" alt="marvin" style="max-height: 50%;">
         </div>
         <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
             <img id="background" class="absolute -left-20 top-0 max-w-[877px]" src="https://laravel.com/assets/img/welcome/background.svg" alt="Laravel background" />
