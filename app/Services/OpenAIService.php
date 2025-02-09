@@ -35,6 +35,74 @@ class OpenAIService
 
         return $response->json();
     }
+
+    // Create Thread
+    public function createThread($messages = [])
+    {
+        $url = "https://{$this->resource}/openai/threads?api-version={$this->aiVersion}";
+
+        $response = Http::withHeaders([
+            'api-key' => $this->key,
+            'Content-Type' => 'application/json',
+        ])->post($url, [
+            'messages' => $messages,
+        ]);
+
+        if ($response->failed()) {
+            return [
+                'error' => $response->json(),
+                'status' => $response->status(),
+            ];
+        }
+
+        return $response->json();
+    }
+
+    // Run Thread
+    public function runThread($assistantId, $threadId)
+    {
+        $url = "https://{$this->resource}/openai/threads/{$threadId}/runs?api-version={$this->aiVersion}";
+
+        $response = Http::withHeaders([
+            'api-key' => $this->key,
+            'Content-Type' => 'application/json',
+        ])->post($url, [
+            'assistant_id' => $assistantId,
+        ]);
+
+        if ($response->failed()) {
+            return [
+                'error' => $response->json(),
+                'status' => $response->status(),
+            ];
+        }
+
+        return $response->json();
+    }
+
+    // Check Run Status
+    public function getRunStatus($threadId, $runId)
+    {
+        $url = "https://{$this->resource}/openai/threads/{$threadId}/runs/{$runId}?api-version={$this->aiVersion}";
+
+        $response = Http::withHeaders([
+            'api-key' => $this->key,
+        ])->get($url);
+
+        return $response->json();
+    }
+
+    // Get Thread Messages
+    public function getThreadMessages($threadId)
+    {
+        $url = "https://{$this->resource}/openai/threads/{$threadId}/messages?api-version={$this->aiVersion}";
+
+        $response = Http::withHeaders([
+            'api-key' => $this->key,
+        ])->get($url);
+
+        return $response->json();
+    }
     
     public function streamChatAssistant($prompt, $assistantId)
     {
